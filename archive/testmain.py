@@ -1,13 +1,12 @@
-from logging import raiseExceptions
 from PIL import Image, ImageOps
 import os
 import requests
 from bs4 import BeautifulSoup
-import statistics
 
-link = "https://onepiecechapters.com/chapters/4257/one-piece-chapter-1058"
-chapter = 1058
-widthtol = (6, 10, 14, 18)
+link = "https://onepiecechapters.com/chapters/212/one-piece-chapter-1030"
+chapter = 1030
+colortol = (30, 35, 40, 45, 50)
+widthtol = (2, 4, 6, 8, 10, 12, 14)
 npages = 0
 
 #get the soup from the url
@@ -38,62 +37,52 @@ for i in os.listdir():
       data.append(tuple((im.size, len(Image.Image.getcolors(im)), i)))
       im.close()
 
-#start engine ------------------------
 
-#filter 1 - based on y dimensions
-y_ = [data[j][0][1] for j in range(len(data))]
-y_ = statistics.mode(y_)
+#filter the stuff
+for i in range(len(colortol)):
 
-data_filtered = filter(lambda y: y[0][1] > (y_ * 0.9) and y[0][1] < (y_ * 1.1), data)
-data = list(data_filtered)
+    #filter the images with too many colours
+    data_filtered = filter(lambda ncolor: ncolor[1] < colortol[i] , data)
+    new_data = list(data_filtered)
+    #print(f'try colortol: {colortol[i]}')
 
-#filter 2 - based on number of colours
-data = sorted(data, key = lambda x: x[1], reverse=False)
+    if len(new_data) >= 9:
+        
+        #get data from images
+        x_width = [new_data[j][0][0] for j in range(len(new_data))]
+        names = [new_data[j][2] for j in range(len(new_data))]
+        xavg = sum(x_width) / 17
 
-for i in range(17)[8:]:
+        #loop for counting the pages
+        for z in range(len(widthtol)):
+            #print(f'    try widthtol: {widthtol[z]}')
+            npages = 0
 
-    data_filtered = data[0:i]
-    #print(f'try firts: {i} pages')
+            pages = []
 
-    x_width = [data_filtered[j][0][0] for j in range(len(data_filtered))]
-    names = [data_filtered[j][2] for j in range(len(data_filtered))]
-    xavg = sum(x_width) / 17
-
-    #loop for counting the pages
-    for z in range(len(widthtol)):
-        #print(f'    try widthtol: {widthtol[z]}')
-        npages = 0
-
-        pages = []
-
-        for j in range(len(x_width)):
-            if (x_width[j] < (xavg + widthtol[z])) and (x_width[j] > (xavg - widthtol[z])):
-                npages +=1
-                pages.append(tuple((1, data_filtered[j][2])))
-                #print('single', new_data[j][2])
-                if npages == 17:
+            for j in range(len(x_width)):
+                if (x_width[j] < (xavg + widthtol[z])) and (x_width[j] > (xavg - widthtol[z])):
+                    npages +=1
+                    pages.append(tuple((1, new_data[j][2])))
+                    #print('single', new_data[j][2])
+                    if npages == 17:
+                        break
+                elif (x_width[j] < (xavg + 3*widthtol[z])*2) and (x_width[j] > (xavg - 3*widthtol[z])*2):
+                    npages += 2
+                    pages.append(tuple((2, new_data[j][2])))
+                    #print('double', new_data[j][2])
+                    if npages == 17:
+                        break
+                else:
+                    #print(f'        ERROR width page not within parameters, !({(xavg - 3*widthtol[z])*2:.0f} < {x_width[j]} < {(xavg + 3*widthtol[z])*2:.0f}): index {j}')
                     break
-            elif (x_width[j] < (xavg + 3*widthtol[z])*2) and (x_width[j] > (xavg - 3*widthtol[z])*2):
-                npages += 2
-                pages.append(tuple((2, data_filtered[j][2])))
-                #print('double', new_data[j][2])
-                if npages == 17:
-                    break
-            else:
-                #print(f'        ERROR width page not within parameters, !({(xavg - 3*widthtol[z])*2:.0f} < {x_width[j]} < {(xavg + 3*widthtol[z])*2:.0f}): index {j}')
+
+            if npages == 17:
                 break
-
+        
         if npages == 17:
-            print(f'Found all 17 pages!')
+            print(f'FOUND DATA! COLORTOL:{colortol[i]}, WIDTHTOL:{widthtol[z]}')
             break
-
-    if npages == 17:
-        break
-
-if npages != 17:
-    raise Exception('Engine Failed')
-
-#End Engine -------------------------------
 
 #sort images (remove the '.png' at the end and sort as integers)
 pages_sorted = sorted(pages, key = lambda tup: int(tup[1][:-4]))

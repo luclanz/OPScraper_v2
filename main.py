@@ -5,8 +5,9 @@ import requests
 from bs4 import BeautifulSoup
 import statistics
 
-link = "https://onepiecechapters.com/chapters/4257/one-piece-chapter-1058"
-chapter = 1058
+link = "https://onepiecechapters.com/chapters/4273/one-piece-chapter-1059"
+chapter = 1059
+
 widthtol = (6, 10, 14, 18)
 npages = 0
 

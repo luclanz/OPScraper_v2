@@ -5,10 +5,11 @@ import requests
 from bs4 import BeautifulSoup
 import statistics
 
-link = "https://onepiecechapters.com/chapters/4273/one-piece-chapter-1059"
-chapter = 1059
+link = "https://onepiecechapters.com/chapters/5662/one-piece-chapter-1077"
+chapter = 1077
+tot_pages = 17
 
-widthtol = (6, 10, 14, 18)
+widthtol = (6, 10, 14, 18, 25, 50, 100)
 npages = 0
 
 #get the soup from the url
@@ -44,21 +45,22 @@ for i in os.listdir():
 #filter 1 - based on y dimensions
 y_ = [data[j][0][1] for j in range(len(data))]
 y_ = statistics.mode(y_)
+print(y_);
 
-data_filtered = filter(lambda y: y[0][1] > (y_ * 0.9) and y[0][1] < (y_ * 1.1), data)
+data_filtered = filter(lambda y: y[0][1] > (y_ * 0.85) and y[0][1] < (y_ * 1.3), data)
 data = list(data_filtered)
 
 #filter 2 - based on number of colours
 data = sorted(data, key = lambda x: x[1], reverse=False)
 
-for i in range(17)[8:]:
+for i in range(18)[8:]:
 
     data_filtered = data[0:i]
     #print(f'try firts: {i} pages')
 
     x_width = [data_filtered[j][0][0] for j in range(len(data_filtered))]
     names = [data_filtered[j][2] for j in range(len(data_filtered))]
-    xavg = sum(x_width) / 17
+    xavg = sum(x_width) / (tot_pages)
 
     #loop for counting the pages
     for z in range(len(widthtol)):
@@ -72,26 +74,26 @@ for i in range(17)[8:]:
                 npages +=1
                 pages.append(tuple((1, data_filtered[j][2])))
                 #print('single', new_data[j][2])
-                if npages == 17:
+                if npages == tot_pages:
                     break
             elif (x_width[j] < (xavg + 3*widthtol[z])*2) and (x_width[j] > (xavg - 3*widthtol[z])*2):
                 npages += 2
                 pages.append(tuple((2, data_filtered[j][2])))
                 #print('double', new_data[j][2])
-                if npages == 17:
+                if npages == tot_pages:
                     break
             else:
                 #print(f'        ERROR width page not within parameters, !({(xavg - 3*widthtol[z])*2:.0f} < {x_width[j]} < {(xavg + 3*widthtol[z])*2:.0f}): index {j}')
                 break
 
-        if npages == 17:
-            print(f'Found all 17 pages!')
+        if npages == tot_pages:
+            print(f'Found all {tot_pages} pages!')
             break
 
-    if npages == 17:
+    if npages == tot_pages:
         break
 
-if npages != 17:
+if npages != tot_pages:
     raise Exception('Engine Failed')
 
 #End Engine -------------------------------

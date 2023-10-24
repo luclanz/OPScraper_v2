@@ -5,8 +5,8 @@ import requests
 from bs4 import BeautifulSoup
 import statistics
 
-link = "https://onepiecechapters.com/chapters/5662/one-piece-chapter-1077"
-chapter = 1077
+link = "https://tcbscans.com/chapters/7521/one-piece-chapter-1095?date=24-10-2023-19"
+chapter = "1095 - A World Where You're Better-Off Dead"
 tot_pages = 17
 
 widthtol = (6, 10, 14, 18, 25, 50, 100)
@@ -45,7 +45,7 @@ for i in os.listdir():
 #filter 1 - based on y dimensions
 y_ = [data[j][0][1] for j in range(len(data))]
 y_ = statistics.mode(y_)
-print(y_);
+print(y_)
 
 data_filtered = filter(lambda y: y[0][1] > (y_ * 0.85) and y[0][1] < (y_ * 1.3), data)
 data = list(data_filtered)

@@ -5,9 +5,9 @@ import requests
 from bs4 import BeautifulSoup
 import statistics
 
-link = "https://tcbscans.com/chapters/7521/one-piece-chapter-1095?date=24-10-2023-19"
-chapter = "1095 - A World Where You're Better-Off Dead"
-tot_pages = 17
+link = "https://tcbscans.com/chapters/7530/one-piece-chapter-1096?date=29-12-2023-18"
+chapter = "1096 - Kumachi"
+tot_pages = 15
 
 widthtol = (6, 10, 14, 18, 25, 50, 100)
 npages = 0
